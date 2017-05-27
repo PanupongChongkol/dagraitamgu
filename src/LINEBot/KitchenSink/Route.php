@@ -62,14 +62,17 @@ class Route
 
             $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
             if (empty($signature)) {
+                echo 'Signature is missing';
                 $logger->info('Signature is missing');
                 return $res->withStatus(400, 'Bad Request');
             }
+            echo 'signature ' . $signature[0];
 
             try {
                 $events = $bot->parseEventRequest($req->getBody(), $signature[0]);
             } catch (InvalidSignatureException $e) {
-                $logger->info('Invalid signature');
+                 echo 'Invalid signature';
+               $logger->info('Invalid signature');
                 return $res->withStatus(400, 'Invalid signature');
             } catch (InvalidEventRequestException $e) {
                 return $res->withStatus(400, "Invalid event request");
