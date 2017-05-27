@@ -36,7 +36,13 @@ public class EchoApplication {
     @EventMapping
     public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
         System.out.println("event: " + event);
-        return new TextMessage(event.getMessage().getText());
+
+        if(event.getMessage().getText().contains("แดกไร")){
+            return new TextMessage(event.getMessage().getText());
+        } else {
+            return null;
+        }
+        //return new TextMessage(event.getMessage().getText());
     }
 
     @EventMapping
