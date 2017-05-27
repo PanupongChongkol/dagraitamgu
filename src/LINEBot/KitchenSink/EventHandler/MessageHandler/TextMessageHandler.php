@@ -64,7 +64,7 @@ class TextMessageHandler implements EventHandler
 
     public function handle()
     {
-        $text = $this->textMessage->getText();
+        $text = strtolower($this->textMessage->getText());
         $replyToken = $this->textMessage->getReplyToken();
         $this->logger->info("Got text message from $replyToken: $text");
 
@@ -156,10 +156,30 @@ class TextMessageHandler implements EventHandler
                 );
                 $this->bot->replyMessage($replyToken, $imagemapMessageBuilder);
                 break;
+            case 'แดกไร':
+                $this->randomFood($replyToken);
+                break;
             default:
-                $this->echoBack($replyToken, $text);
+                //$this->echoBack($replyToken, $text);
                 break;
         }
+    }
+
+     /**
+     * @param string $replyToken
+     * @param string $text
+     */
+    private function randomFood($replyToken)
+    {
+
+        $meat = ['หมู','ปลา','ไก่','กุ้ง','หอย','ปู','เนื้อ','ผัก','เห็ด'];
+        $method = ['ผัด','ต้ม','ทอด'];
+        $sauce = ['น้ำมันหอย','พริกไทยดำ','ผงกะหรี่','เปรี้ยวหวาน','กระเทียม'];
+
+        $text = $meat[array_rand($meat)] . $method[array_rand($method)] . $sauce[array_rand($sauce)];
+        //$this->logger->info("Returns echo message $replyToken: $text");
+
+        $this->bot->replyText($replyToken, $text);
     }
 
     /**
