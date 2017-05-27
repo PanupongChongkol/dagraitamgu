@@ -2,6 +2,7 @@
   "name": "dagraitamgu",
   "scripts": {
   },
+  "keywords": ["chatbot", "line", "java"],
   "env": {
     "LINE_BOT_CHANNEL_SECRET": {
       "required": true
