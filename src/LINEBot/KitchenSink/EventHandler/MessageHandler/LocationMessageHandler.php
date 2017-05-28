@@ -70,11 +70,12 @@ class LocationMessageHandler implements EventHandler
         $response = urldecode($response);
 
         $json = json_decode($response);
+        $result = $json->results[rand(0,count($json->results) - 1)];
 
-        $latitude = $json->results[0]->geometry->location->lat;
-        $longitude = $json->results[0]->geometry->location->lng;
-        $title = $json->results[0]->name;
-        $address = $json->results[0]->vicinity;
+        $latitude = $result->geometry->location->lat;
+        $longitude = $result->geometry->location->lng;
+        $title = $result->name;
+        $address = $result->vicinity;
         
         error_log("Replying is " . $title . " at " . $address);
 
