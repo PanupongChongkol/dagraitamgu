@@ -51,14 +51,12 @@ class LocationMessageHandler implements EventHandler
         $latitude = $this->locationMessage->getLatitude();
         $longitude = $this->locationMessage->getLongitude();
 
-        $userId = $this->locationMessage->getUserId();
-        $response = $this->bot->getProfile($userId);
-        if (!$response->isSucceeded()) {
-            $this->bot->replyText($replyToken, $response->getRawBody());
-            return;
+        $keyword = 'random';
+
+        if($this->checkUniqueUser()){
+            $keyword = 'kfc';
         }
-        $profile = $response->getJSONDecodedBody();
-        $keyword = $profile['displayName'];
+
         $location = $latitude . ',' . $longitude;
 
         $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
@@ -88,5 +86,22 @@ class LocationMessageHandler implements EventHandler
             $replyToken,
             new LocationMessageBuilder($title, $address, $latitude, $longitude)
         );
+    }
+
+    private function checkUniqueUser(){
+        $userId = $this->textMessage->getUserId();
+        error_log("checking user " . $userId);
+        $response = $this->bot->getProfile($userId);
+        if (!$response->isSucceeded()) {
+            $this->bot->replyText($replyToken, $response->getRawBody());
+            return;
+        }
+        $profile = $response->getJSONDecodedBody();
+        $keyword = $profile['displayName'];
+
+        if($keyword == 'KoKo'){
+            return true;
+        }
+        return false;
     }
 }

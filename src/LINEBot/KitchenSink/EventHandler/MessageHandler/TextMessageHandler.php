@@ -164,13 +164,39 @@ class TextMessageHandler implements EventHandler
 //AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ  : google MAP key
 
         if(strpos($text, 'แดกไร') !== false){
+            if($this->checkUniqueUser()){
+                $this->bot->replyMessage(
+                    $replyToken,
+                    "ไก่ทอด"
+                );
+                return;
+            }
+
             $this->randomFood($replyToken);
         }
         if(strpos($text, 'แดกไหน') !== false){
+
+            if($this->checkUniqueUser()){
+                $this->bot->replyMessage(
+                    $replyToken,
+                    "KFC!!"
+                );
+                return;
+            }
+
             $this->bot->replyText($replyToken, 'อยากไปแดกแถวไหนละ', 'แชร์โลมาด้ายนะ');
         }
         if(strpos($text, 'สุ่ม') !== false){
             if(strpos($text, 'มา') !== false){
+
+                if($this->checkUniqueUser()){
+                    $this->bot->replyMessage(
+                        $replyToken,
+                        "KFC!!"
+                    );
+                    return;
+                }
+
                 $keyword = str_replace('สุ่ม', '', $text);
                 $keyword = str_replace('มา', '', $keyword);
                 if($keyword == ''){
@@ -206,7 +232,7 @@ class TextMessageHandler implements EventHandler
                 $title = $json->results[0]->name;
                 $address = $json->results[0]->vicinity;
 
-                error_log("Replying is " . $title . " at " . $address);
+                error_log("Replying is " . $title . " at " . $address . " " . $latitude . "," . $longitude);
 
                 $this->bot->replyMessage(
                     $replyToken,
@@ -265,22 +291,16 @@ class TextMessageHandler implements EventHandler
     }
 
     private function load($path, $key_field = null){
-        error_log('Load 1');
-       if (!is_file($path)) {
+        if (!is_file($path)) {
             throw new \Exception('File does not exist ' . $path, \Application::ERR_CODE_COMMON);
         }
-             error_log('Load 2');
    
         $fp = fopen($path, 'r');
-             error_log('Load 3');
 
         $header_array = fgetcsv($fp);
-              error_log('Load 4');
-       $use_key = !is_null($key_field) && in_array($key_field, $header_array);
-                error_log('Load 5');
-     $csv = null;
-              error_log('Load 6');
-       while ($field_array = fgetcsv($fp)) {
+        $use_key = !is_null($key_field) && in_array($key_field, $header_array);
+        $csv = null;
+        while ($field_array = fgetcsv($fp)) {
             if ($use_key !== false) {
                 $row = array_combine($header_array, $field_array);
                 $csv[$row[$key_field]] = $row;
@@ -289,9 +309,24 @@ class TextMessageHandler implements EventHandler
                 $csv[] = $row;
             }
         }
-             error_log('Load 7');
         fclose($fp);
-              error_log('Load 8');
-       return $csv;
+        return $csv;
+    }
+
+    private function checkUniqueUser(){
+        $userId = $this->textMessage->getUserId();
+        error_log("checking user " . $userId);
+        $response = $this->bot->getProfile($userId);
+        if (!$response->isSucceeded()) {
+            $this->bot->replyText($replyToken, $response->getRawBody());
+            return;
+        }
+        $profile = $response->getJSONDecodedBody();
+        $keyword = $profile['displayName'];
+
+        if($keyword == 'KoKo'){
+            return true;
+        }
+        return false;
     }
 }
