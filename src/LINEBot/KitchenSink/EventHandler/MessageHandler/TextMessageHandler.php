@@ -197,14 +197,10 @@ class TextMessageHandler implements EventHandler
                 if($this->checkUniqueUser()){
                     $keyword = 'kfc';
                 }
-                error_log('Keyword will be ' . $keyword);
-                error_log("Ramdoming location");
-                error_log("will try to open file from " . __DIR__ . '/./location.csv');
                 $location = $this->load(__DIR__ . '/./location.csv', 'id'); 
-                 error_log("open completed");
+                shuffle($location);
                 $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
-                error_log("at " . $location);
 
                 $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
                 $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
@@ -213,12 +209,8 @@ class TextMessageHandler implements EventHandler
                 $url .= "&keyword=" . urlencode($keyword);
                 $url .= "&location=" . urlencode($location);
 
-                error_log("Request Url is " . $url);
-
                 $response = file_get_contents($url);
                 $response = urldecode($response);
-
-                error_log("Response is " . json_encode($response));
 
                 $json = json_decode($response);
 
@@ -226,9 +218,7 @@ class TextMessageHandler implements EventHandler
                 $longitude = $json->results[0]->geometry->location->lng;
                 $title = $json->results[0]->name;
                 $address = $json->results[0]->vicinity;
-
                 error_log("Replying is " . $title . " at " . $address . " " . $latitude . "," . $longitude);
-
                 $this->bot->replyMessage(
                     $replyToken,
                     new LocationMessageBuilder($title, $address, $latitude, $longitude)

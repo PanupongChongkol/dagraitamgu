@@ -66,12 +66,8 @@ class LocationMessageHandler implements EventHandler
         $url .= "&keyword=" . urlencode($keyword);
         $url .= "&location=" . urlencode($location);
 
-        error_log("Request Url is " . $url);
-
         $response = file_get_contents($url);
         $response = urldecode($response);
-
-        error_log("Response is " . json_encode($response));
 
         $json = json_decode($response);
 
