@@ -174,15 +174,16 @@ class TextMessageHandler implements EventHandler
             if(strpos($text, 'มา') !== false){
                 $keyword = str_replace('สุ่ม', '', $text);
                 $keyword = str_replace('มา', '', $keyword);
-                error_log('Keyword will be ' . $keyword);
                 if($keyword == ''){
                     $keyword = 'random';
                 }
+                error_log('Keyword will be ' . $keyword);
                 error_log("Ramdoming location");
+                error_log("will try to open file from " . __DIR__ . '/./location.csv');
                 $location = load(__DIR__ . '/./location.csv', 'id'); 
+                 error_log("open completed");
                 $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
-                error_log("Ramdom as " . $keyword);
                 error_log("at " . $location);
 
                 $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
