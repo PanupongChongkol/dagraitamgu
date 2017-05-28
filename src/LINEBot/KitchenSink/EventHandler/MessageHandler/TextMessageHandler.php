@@ -91,16 +91,16 @@ class TextMessageHandler implements EventHandler
                 $this->bot->replyText($replyToken, 'Bot cannot leave from 1:1 chat');
                 break;
             case 'confirmm':
-                $this->bot->replyMessage(
-                    $replyToken,
-                    new TemplateMessageBuilder(
-                        'Confirm alt text',
-                        new ConfirmTemplateBuilder('Do it?', [
-                            new PostbackTemplateActionBuilder('Add to cart', 'action=add&itemid=123'),
-                            new MessageTemplateActionBuilder('No', 'No!'),
-                        ])
-                    )
+                $ConfirmTemplateBuilder = new ConfirmTemplateBuilder(
+                    'Do it?', 
+                    [
+                        new PostbackTemplateActionBuilder('Add to cart', 'action=add&itemid=123'),
+                        new MessageTemplateActionBuilder('No', 'No!'),
+                    ]
                 );
+                $templateMessage = new TemplateMessageBuilder('Confirm alt text', $ConfirmTemplateBuilder);
+                error_log(json_encode($templateMessage->buildMessage()));
+                $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
             case 'buttonss':
                 $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
