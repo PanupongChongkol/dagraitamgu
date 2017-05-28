@@ -166,7 +166,7 @@ class TextMessageHandler implements EventHandler
 
         if(strpos($text, 'แดกไร') !== false){
             if($this->checkUniqueUser()){
-                $this->bot->replyMessage(
+                $this->bot->replyText(
                     $replyToken,
                     "ไก่ทอด"
                 );
@@ -178,7 +178,7 @@ class TextMessageHandler implements EventHandler
         if(strpos($text, 'แดกไหน') !== false){
 
             if($this->checkUniqueUser()){
-                $this->bot->replyMessage(
+                $this->bot->replyText(
                     $replyToken,
                     "KFC!!"
                 );
@@ -198,8 +198,7 @@ class TextMessageHandler implements EventHandler
                     $keyword = 'kfc';
                 }
                 $location = $this->load(__DIR__ . '/./location.csv', 'id'); 
-                shuffle($location);
-                $ranLocation = array_splice($location, 0)[0];
+                $ranLocation = $location[array_rand($location)];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
 
                 $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
