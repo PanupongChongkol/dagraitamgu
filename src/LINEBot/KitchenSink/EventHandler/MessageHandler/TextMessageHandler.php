@@ -156,12 +156,48 @@ class TextMessageHandler implements EventHandler
                 );
                 $this->bot->replyMessage($replyToken, $imagemapMessageBuilder);
                 break;
-            case 'แดกไร':
-                $this->randomFood($replyToken);
-                break;
             default:
                 //$this->echoBack($replyToken, $text);
                 break;
+        }
+//AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ  : google MAP key
+
+        if(strpos($text, 'แดกไร') !== false){
+            $this->randomFood($replyToken);
+        }
+        if(strpos($text, 'แดกไหน') !== false){
+            $this->bot->replyText($replyToken, 'อยากไปแดกแถวไหนละ');
+            $this->bot->replyText($replyToken, 'แชร์โลมาด้ายนะ');
+        }
+        if(strpos($text, 'สุ่ม') !== false){
+            if(strpos($text, 'มา') !== false){
+                $keyword = str_replace('สุ่ม', '', $text);
+                $keyword = str_replace('มา', '', $keyword);
+                $location = load('./location.csv', 'id'); 
+                $ranLocation = array_splice($location, 0)[0];
+                $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
+
+                $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+                $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+                $url .= "&type=" . 'restaurant';
+                $url .= "&radius=" . '1000';
+                $url .= "&keyword=" . urlencode($keyword);
+                $url .= "&location=" . urlencode($location);
+                $response = file_get_contents($url);
+                $response = urldecode($response);
+
+                $json = json_decode($response);
+
+                $latitude = $json->results[0]->geometry->location->lat;
+                $longitude = $json->results[0]->geometry->location->lng;
+                $title = $json->results[0]->name;
+                $address = $json->results[0]->vicinity;
+
+                $this->bot->replyMessage(
+                    $replyToken,
+                    new LocationMessageBuilder($title, $address, $latitude, $longitude)
+                );
+            }
         }
     }
 
@@ -211,5 +247,28 @@ class TextMessageHandler implements EventHandler
             'Display name: ' . $profile['displayName'],
             'Status message: ' . $profile['statusMessage']
         );
+    }
+
+    function load($path, $key_field = null){
+        if (!is_file($path)) {
+            throw new \Exception('File does not exist ' . $path, \Application::ERR_CODE_COMMON);
+        }
+        
+        $fp = fopen($path, 'r');
+
+        $header_array = fgetcsv($fp);
+        $use_key = !is_null($key_field) && in_array($key_field, $header_array);
+        $csv = null;
+        while ($field_array = fgetcsv($fp)) {
+            if ($use_key !== false) {
+                $row = array_combine($header_array, $field_array);
+                $csv[$row[$key_field]] = $row;
+            } else {
+                $row = array_combine($header_array, $field_array);
+                $csv[] = $row;
+            }
+        }
+        fclose($fp);
+        return $csv;
     }
 }

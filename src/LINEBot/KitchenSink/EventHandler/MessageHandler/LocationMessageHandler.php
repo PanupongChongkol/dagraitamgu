@@ -48,10 +48,34 @@ class LocationMessageHandler implements EventHandler
     public function handle()
     {
         $replyToken = $this->locationMessage->getReplyToken();
-        $title = $this->locationMessage->getTitle();
-        $address = $this->locationMessage->getAddress();
         $latitude = $this->locationMessage->getLatitude();
         $longitude = $this->locationMessage->getLongitude();
+
+        $userId = $this->textMessage->getUserId();
+        $response = $this->bot->getProfile($userId);
+        if (!$response->isSucceeded()) {
+            $this->bot->replyText($replyToken, $response->getRawBody());
+            return;
+        }
+        $profile = $response->getJSONDecodedBody();
+        $keyword = $profile['displayName'];
+        $location = $latitude . ',' . $longitude;
+
+        $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&type=" . 'restaurant';
+        $url .= "&radius=" . '1000';
+        $url .= "&keyword=" . urlencode($keyword);
+        $url .= "&location=" . urlencode($location);
+        $response = file_get_contents($url);
+        $response = urldecode($response);
+
+        $json = json_decode($response);
+
+        $latitude = $json->results[0]->geometry->location->lat;
+        $longitude = $json->results[0]->geometry->location->lng;
+        $title = $json->results[0]->name;
+        $address = $json->results[0]->vicinity;
 
         $this->bot->replyMessage(
             $replyToken,
