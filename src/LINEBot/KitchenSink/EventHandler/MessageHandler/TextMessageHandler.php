@@ -116,7 +116,7 @@ class TextMessageHandler implements EventHandler
                     ]
                 );
                 $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
-                error_log($templateMessage->buildMessage());
+                error_log(json_encode($templateMessage->buildMessage()));
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
             case 'carousel':
@@ -133,6 +133,7 @@ class TextMessageHandler implements EventHandler
                     ]),
                 ]);
                 $templateMessage = new TemplateMessageBuilder('Button alt text', $carouselTemplateBuilder);
+                error_log(json_encode($templateMessage->buildMessage()));
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
             case 'imagemap':
@@ -161,6 +162,7 @@ class TextMessageHandler implements EventHandler
                         )
                     ]
                 );
+                error_log(json_encode($imagemapMessageBuilder->buildMessage()));
                 $this->bot->replyMessage($replyToken, $imagemapMessageBuilder);
                 break;
             default:
