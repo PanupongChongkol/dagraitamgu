@@ -192,7 +192,7 @@ class TextMessageHandler implements EventHandler
                 $keyword = str_replace('สุ่ม', '', $text);
                 $keyword = str_replace('มา', '', $keyword);
                 if($keyword == ''){
-                    $keyword = 'random';
+                    $keyword = 'restaurant';
                 }
                 if($this->checkUniqueUser()){
                     $keyword = 'kfc';
@@ -222,7 +222,7 @@ class TextMessageHandler implements EventHandler
                 if(!isset($address)){
                    $this->bot->replyText(
                     $replyToken,
-                    "แล้วแต่เดะ"
+                    "ไม่เจอจริง"
                 );
                 return; 
                 }

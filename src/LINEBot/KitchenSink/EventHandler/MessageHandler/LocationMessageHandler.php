@@ -51,7 +51,7 @@ class LocationMessageHandler implements EventHandler
         $latitude = $this->locationMessage->getLatitude();
         $longitude = $this->locationMessage->getLongitude();
 
-        $keyword = 'random';
+        $keyword = 'restaurant';
 
         if($this->checkUniqueUser()){
             $keyword = 'kfc';
