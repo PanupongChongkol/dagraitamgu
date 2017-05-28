@@ -317,10 +317,14 @@ class TextMessageHandler implements EventHandler
     }
 
     private function checkUniqueUser(){
-        /*if($this->textMessage->isRoomEvent() || $this->textMessage->isGroupEvent()){
+
+        echo "userId exist? " . array_key_exists('userId', $this->event['source']) ? "yes" : "no";
+        echo array_key_exists('userId', $this->event['source']) ? $this->event['source']['userId'] : "";
+
+        if($this->textMessage->isRoomEvent() || $this->textMessage->isGroupEvent()){
             error_log("wont check cause it's a room/group");
             return false;
-        }*/
+        }
 
         $userId = $this->textMessage->getUserId();
         error_log("checking user " . $userId);
