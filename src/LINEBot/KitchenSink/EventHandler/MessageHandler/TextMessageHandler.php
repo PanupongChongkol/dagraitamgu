@@ -73,11 +73,11 @@ class TextMessageHandler implements EventHandler
         error_log("Got text message from $replyToken: $text");
 
         switch ($text) {
-            case 'profile':
+            case 'profilee':
                 $userId = $this->textMessage->getUserId();
                 $this->sendProfile($replyToken, $userId);
                 break;
-            case 'bye':
+            case 'ลาก่อย':
                 if ($this->textMessage->isRoomEvent()) {
                     $this->bot->replyText($replyToken, 'Leaving room');
                     $this->bot->leaveRoom($this->textMessage->getRoomId());
@@ -90,36 +90,36 @@ class TextMessageHandler implements EventHandler
                 }
                 $this->bot->replyText($replyToken, 'Bot cannot leave from 1:1 chat');
                 break;
-            case 'confirm':
+            case 'confirmm':
                 $this->bot->replyMessage(
                     $replyToken,
                     new TemplateMessageBuilder(
                         'Confirm alt text',
                         new ConfirmTemplateBuilder('Do it?', [
-                            new MessageTemplateActionBuilder('Yes', 'Yes!'),
+                            new PostbackTemplateActionBuilder('Add to cart', 'action=add&itemid=123'),
                             new MessageTemplateActionBuilder('No', 'No!'),
                         ])
                     )
                 );
                 break;
-            case 'buttons':
+            case 'buttonss':
                 $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
                 $buttonTemplateBuilder = new ButtonTemplateBuilder(
                     'My button sample',
                     'Hello my button',
                     $imageUrl,
                     [
-                        new UriTemplateActionBuilder('Go to line.me', 'https://line.me'),
-                        new PostbackTemplateActionBuilder('Buy', 'action=buy&itemid=123'),
-                        new PostbackTemplateActionBuilder('Add to cart', 'action=add&itemid=123'),
-                        new MessageTemplateActionBuilder('Say message', 'hello hello'),
+                        new MessageTemplateActionBuilder('Say message', 'hello 1hello'),
+                        new MessageTemplateActionBuilder('Say message', 'hello 2hello'),
+                        new MessageTemplateActionBuilder('Say message', 'hello 3hello'),
+                        new MessageTemplateActionBuilder('Say message', 'hello 4hello'),
                     ]
                 );
                 $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
                 error_log(json_encode($templateMessage->buildMessage()));
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
-            case 'carousel':
+            case 'carousell':
                 $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
                 error_log("The url is " . $imageUrl);
                 $carouselTemplateBuilder = new CarouselTemplateBuilder([
@@ -136,7 +136,7 @@ class TextMessageHandler implements EventHandler
                 error_log(json_encode($templateMessage->buildMessage()));
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
-            case 'imagemap':
+            case 'imagemapp':
                 $richMessageUrl = UrlBuilder::buildUrl($this->req, ['static', 'rich']);
                 error_log("The url is " . $richMessageUrl);
                 $imagemapMessageBuilder = new ImagemapMessageBuilder(
@@ -162,7 +162,7 @@ class TextMessageHandler implements EventHandler
                         )
                     ]
                 );
-                error_log(json_encode($imagemapMessageBuilder->buildMessage()));
+                error_log(json_encode($templateMessage->buildMessage()));
                 $this->bot->replyMessage($replyToken, $imagemapMessageBuilder);
                 break;
             default:
@@ -192,7 +192,7 @@ class TextMessageHandler implements EventHandler
                 return;
             }
 
-            $this->bot->replyText($replyToken, 'อยากไปแดกแถวไหนละ', 'แชร์โลมาด้ายนะ');
+            $this->bot->replyText($replyToken, 'อยากไปแดกแถวไหนละ');
         }
         if(strpos($text, 'สุ่ม') !== false){
             if(strpos($text, 'มา') !== false){
@@ -236,7 +236,8 @@ class TextMessageHandler implements EventHandler
 
                 $this->bot->replyMessage(
                     $replyToken,
-                    (new LINEBot\MessageBuilder\MultiMessageBuilder())->add(new TextMessageBuilder('แดกนี่ไง'))
+                    (new LINEBot\MessageBuilder\MultiMessageBuilder())
+                        ->add(new TextMessageBuilder('แดกนี่ไง'))
                         ->add(new LocationMessageBuilder($title, $address, $latitude, $longitude))
                 );
             }
