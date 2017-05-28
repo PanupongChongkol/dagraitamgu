@@ -179,7 +179,7 @@ class TextMessageHandler implements EventHandler
                 error_log('Keyword will be ' . $keyword);
                 error_log("Ramdoming location");
                 error_log("will try to open file from " . __DIR__ . '/./location.csv');
-                $location = load(__DIR__ . '/./location.csv', 'id'); 
+                $location = $this->load(__DIR__ . '/./location.csv', 'id'); 
                  error_log("open completed");
                 $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
@@ -264,7 +264,7 @@ class TextMessageHandler implements EventHandler
         );
     }
 
-    function load($path, $key_field = null){
+    private function load($path, $key_field = null){
         error_log('Load 1');
        if (!is_file($path)) {
             throw new \Exception('File does not exist ' . $path, \Application::ERR_CODE_COMMON);

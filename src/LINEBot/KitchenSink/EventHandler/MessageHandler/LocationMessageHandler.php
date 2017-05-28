@@ -47,11 +47,11 @@ class LocationMessageHandler implements EventHandler
 
     public function handle()
     {
-        /*$replyToken = $this->locationMessage->getReplyToken();
+        $replyToken = $this->locationMessage->getReplyToken();
         $latitude = $this->locationMessage->getLatitude();
         $longitude = $this->locationMessage->getLongitude();
 
-        $userId = $this->textMessage->getUserId();
+        $userId = $this->locationMessage->getUserId();
         $response = $this->bot->getProfile($userId);
         if (!$response->isSucceeded()) {
             $this->bot->replyText($replyToken, $response->getRawBody());
@@ -83,24 +83,6 @@ class LocationMessageHandler implements EventHandler
         $address = $json->results[0]->vicinity;
         
         error_log("Replying is " . $title . " at " . $address);
-
-        $this->bot->replyMessage(
-            $replyToken,
-            new LocationMessageBuilder($title, $address, $latitude, $longitude)
-        );*/
-
-        $userId = $this->textMessage->getUserId();
-        $response = $this->bot->getProfile($userId);
-        if (!$response->isSucceeded()) {
-            $this->bot->replyText($replyToken, $response->getRawBody());
-            return;
-        }
-        $profile = $response->getJSONDecodedBody();
-        $keyword = $profile['displayName'];
-        $location = $latitude . ',' . $longitude;
-        
-        $latitude = $this->locationMessage->getLatitude();
-        $longitude = $this->locationMessage->getLongitude();
 
         $this->bot->replyMessage(
             $replyToken,
