@@ -174,10 +174,14 @@ class TextMessageHandler implements EventHandler
             if(strpos($text, 'มา') !== false){
                 $keyword = str_replace('สุ่ม', '', $text);
                 $keyword = str_replace('มา', '', $keyword);
-                $location = load('./location.csv', 'id'); 
+                error_log('Keyword will be ' . $keyword);
+                if($keyword == ''){
+                    $keyword = 'random';
+                }
+                error_log("Ramdoming location");
+                $location = load(__DIR__ . '/./location.csv', 'id'); 
                 $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
-
                 error_log("Ramdom as " . $keyword);
                 error_log("at " . $location);
 
