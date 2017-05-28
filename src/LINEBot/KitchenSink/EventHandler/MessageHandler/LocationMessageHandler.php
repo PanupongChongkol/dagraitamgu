@@ -84,17 +84,17 @@ class LocationMessageHandler implements EventHandler
 
         $this->bot->replyMessage(
             $replyToken,
+            "ที่นี้ได้มะ " . "$title",
             new LocationMessageBuilder($title, $address, $latitude, $longitude)
         );
     }
 
     private function checkUniqueUser(){
-        $userId = $this->textMessage->getUserId();
+        $userId = $this->locationMessage->getUserId();
         error_log("checking user " . $userId);
         $response = $this->bot->getProfile($userId);
         if (!$response->isSucceeded()) {
-            $this->bot->replyText($replyToken, $response->getRawBody());
-            return;
+            return false;
         }
         $profile = $response->getJSONDecodedBody();
         $keyword = $profile['displayName'];

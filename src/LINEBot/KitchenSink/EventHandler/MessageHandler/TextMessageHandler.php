@@ -35,6 +35,7 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\LocationMessageBuilder;
 
 class TextMessageHandler implements EventHandler
 {
@@ -236,6 +237,7 @@ class TextMessageHandler implements EventHandler
 
                 $this->bot->replyMessage(
                     $replyToken,
+                    "แดกนี่เลย",
                     new LocationMessageBuilder($title, $address, $latitude, $longitude)
                 );
             }
@@ -318,8 +320,7 @@ class TextMessageHandler implements EventHandler
         error_log("checking user " . $userId);
         $response = $this->bot->getProfile($userId);
         if (!$response->isSucceeded()) {
-            $this->bot->replyText($replyToken, $response->getRawBody());
-            return;
+            return false;
         }
         $profile = $response->getJSONDecodedBody();
         $keyword = $profile['displayName'];
