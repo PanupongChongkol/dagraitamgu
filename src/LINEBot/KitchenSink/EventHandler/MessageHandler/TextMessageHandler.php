@@ -116,6 +116,7 @@ class TextMessageHandler implements EventHandler
                     ]
                 );
                 $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
+                error_log($templateMessage->buildMessage());
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
             case 'carousel':
