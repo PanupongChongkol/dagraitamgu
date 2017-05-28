@@ -220,15 +220,18 @@ class TextMessageHandler implements EventHandler
                 $address = $json->results[0]->vicinity;
                 error_log("Replying is " . $title . " at " . $address . " " . $latitude . "," . $longitude);
                 if(!isset($address)){
-                   $this->bot->replyText(
-                    $replyToken,
-                    "ไม่เจอจริง"
-                );
-                return; 
+                    $this->bot->replyText(
+                        $replyToken,
+                        "ไม่เจอจริง"
+                    );
+                    return; 
                 }
+
                 $this->bot->replyMessage(
                     $replyToken,
-                    new LocationMessageBuilder($title, $address, $latitude, $longitude)
+                    new LINEBot\MessageBuilder\MultiMessageBuilder())
+                        ->add(new TextMessageBuilder('แดกนี่ไง'))
+                        ->add(new LocationMessageBuilder($title, $address, $latitude, $longitude))
                 );
             }
         }
@@ -306,10 +309,10 @@ class TextMessageHandler implements EventHandler
     }
 
     private function checkUniqueUser(){
-        if($this->textMessage->isRoomEvent() || $this->textMessage->isGroupEvent()){
+        /*if($this->textMessage->isRoomEvent() || $this->textMessage->isGroupEvent()){
             error_log("wont check cause it's a room/group");
             return false;
-        }
+        }*/
 
         $userId = $this->textMessage->getUserId();
         error_log("checking user " . $userId);

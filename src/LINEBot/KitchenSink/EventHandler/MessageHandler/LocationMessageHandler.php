@@ -85,10 +85,10 @@ class LocationMessageHandler implements EventHandler
     }
 
     private function checkUniqueUser(){
-        if($this->locationMessage->isRoomEvent() || $this->locationMessage->isGroupEvent()){
+        /*if($this->locationMessage->isRoomEvent() || $this->locationMessage->isGroupEvent()){
             error_log("wont check cause it's a room/group");
             return false;
-        }
+        }*/
 
         $userId = $this->locationMessage->getUserId();
         error_log("checking user " . $userId);
