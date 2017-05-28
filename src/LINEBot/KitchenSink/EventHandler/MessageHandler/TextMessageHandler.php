@@ -189,19 +189,13 @@ class TextMessageHandler implements EventHandler
         }
         if(strpos($text, 'สุ่ม') !== false){
             if(strpos($text, 'มา') !== false){
-
-                if($this->checkUniqueUser()){
-                    $this->bot->replyMessage(
-                        $replyToken,
-                        "KFC!!"
-                    );
-                    return;
-                }
-
                 $keyword = str_replace('สุ่ม', '', $text);
                 $keyword = str_replace('มา', '', $keyword);
                 if($keyword == ''){
                     $keyword = 'random';
+                }
+                if($this->checkUniqueUser()){
+                    $keyword = 'kfc';
                 }
                 error_log('Keyword will be ' . $keyword);
                 error_log("Ramdoming location");
@@ -322,14 +316,8 @@ class TextMessageHandler implements EventHandler
 
         $userId = $this->textMessage->getUserId();
         error_log("checking user " . $userId);
-        $response = $this->bot->getProfile($userId);
-        if (!$response->isSucceeded()) {
-            return false;
-        }
-        $profile = $response->getJSONDecodedBody();
-        $keyword = $profile['displayName'];
-
-        if($keyword == 'KoKo'){
+        if($userId == 'U66902f6ba7f571bbe34e12cfd6cf358a'){
+            error_log("matched");
             return true;
         }
         return false;

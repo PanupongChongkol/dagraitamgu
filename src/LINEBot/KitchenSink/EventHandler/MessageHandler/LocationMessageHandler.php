@@ -96,14 +96,8 @@ class LocationMessageHandler implements EventHandler
 
         $userId = $this->locationMessage->getUserId();
         error_log("checking user " . $userId);
-        $response = $this->bot->getProfile($userId);
-        if (!$response->isSucceeded()) {
-            return false;
-        }
-        $profile = $response->getJSONDecodedBody();
-        $keyword = $profile['displayName'];
-
-        if($keyword == 'KoKo'){
+        if($userId == 'U66902f6ba7f571bbe34e12cfd6cf358a'){
+            error_log("matched");
             return true;
         }
         return false;
