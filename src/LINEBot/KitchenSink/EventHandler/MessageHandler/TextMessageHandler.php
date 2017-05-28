@@ -198,13 +198,14 @@ class TextMessageHandler implements EventHandler
                     $keyword = 'kfc';
                 }
                 $location = $this->load(__DIR__ . '/./location.csv', 'id'); 
-                $ranLocation = $location[array_rand($location)];
+                shuffle($location);
+                $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
 
                 $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
                 $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
                 $url .= "&type=" . 'restaurant';
-                $url .= "&radius=" . '1000';
+                $url .= "&radius=" . '10000';
                 $url .= "&keyword=" . urlencode($keyword);
                 $url .= "&location=" . urlencode($location);
 
@@ -218,6 +219,13 @@ class TextMessageHandler implements EventHandler
                 $title = $json->results[0]->name;
                 $address = $json->results[0]->vicinity;
                 error_log("Replying is " . $title . " at " . $address . " " . $latitude . "," . $longitude);
+                if(!isset($address)){
+                   $this->bot->replyText(
+                    $replyToken,
+                    "แล้วแต่เดะ"
+                );
+                return; 
+                }
                 $this->bot->replyMessage(
                     $replyToken,
                     new LocationMessageBuilder($title, $address, $latitude, $longitude)
