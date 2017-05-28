@@ -237,7 +237,6 @@ class TextMessageHandler implements EventHandler
 
                 $this->bot->replyMessage(
                     $replyToken,
-                    "แดกนี่เลย",
                     new LocationMessageBuilder($title, $address, $latitude, $longitude)
                 );
             }

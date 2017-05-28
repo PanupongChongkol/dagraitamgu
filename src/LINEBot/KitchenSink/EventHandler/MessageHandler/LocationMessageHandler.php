@@ -84,7 +84,6 @@ class LocationMessageHandler implements EventHandler
 
         $this->bot->replyMessage(
             $replyToken,
-            "ที่นี้ได้มะ " . "$title",
             new LocationMessageBuilder($title, $address, $latitude, $longitude)
         );
     }
