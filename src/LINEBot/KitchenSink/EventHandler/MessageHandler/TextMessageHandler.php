@@ -66,6 +66,7 @@ class TextMessageHandler implements EventHandler
 
     public function handle()
     {
+    try{
         $text = strtolower($this->textMessage->getText());
         $replyToken = $this->textMessage->getReplyToken();
         $this->logger->info("Got text message from $replyToken: $text");
@@ -235,6 +236,13 @@ class TextMessageHandler implements EventHandler
                 );
             }
         }
+    }
+    catch(Exception $e){
+        $this->bot->replyText(
+            $replyToken,
+            $e->getMessage()
+        );
+    }
     }
 
      /**
