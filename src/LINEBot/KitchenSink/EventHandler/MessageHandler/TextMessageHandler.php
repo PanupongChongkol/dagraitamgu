@@ -164,7 +164,7 @@ class TextMessageHandler implements EventHandler
                         )
                     ]
                 );
-                error_log(json_encode($templateMessage->buildMessage()));
+                error_log(json_encode($imagemapMessageBuilder->buildMessage()));
                 $this->bot->replyMessage($replyToken, $imagemapMessageBuilder);
                 break;
             default:

@@ -85,7 +85,11 @@ class Route
 
                 if ($event instanceof MessageEvent) {
                     if ($event instanceof TextMessage) {
-                        $handler = new TextMessageHandler($bot, $logger, $req, $event);
+                        try{
+                            $handler = new TextMessageHandler($bot, $logger, $req, $event);
+                        }catch(Exception $e){
+                            $this->bot->replyText($event->getReplyToken(), $e->getMessage());
+                        }
                     } elseif ($event instanceof StickerMessage) {
                         $handler = new StickerMessageHandler($bot, $logger, $event);
                     } elseif ($event instanceof LocationMessage) {
