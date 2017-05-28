@@ -120,6 +120,7 @@ class TextMessageHandler implements EventHandler
                 break;
             case 'carousel':
                 $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
+                error_log("The url is " . $imageUrl);
                 $carouselTemplateBuilder = new CarouselTemplateBuilder([
                     new CarouselColumnTemplateBuilder('foo', 'bar', $imageUrl, [
                         new UriTemplateActionBuilder('Go to line.me', 'https://line.me'),
@@ -135,6 +136,7 @@ class TextMessageHandler implements EventHandler
                 break;
             case 'imagemap':
                 $richMessageUrl = UrlBuilder::buildUrl($this->req, ['static', 'rich']);
+                error_log("The url is " . $richMessageUrl);
                 $imagemapMessageBuilder = new ImagemapMessageBuilder(
                     $richMessageUrl,
                     'This is alt text',
@@ -317,9 +319,6 @@ class TextMessageHandler implements EventHandler
     }
 
     private function checkUniqueUser(){
-
-        echo "userId exist? " . array_key_exists('userId', $this->event['source']) ? "yes" : "no";
-        echo array_key_exists('userId', $this->event['source']) ? $this->event['source']['userId'] : "";
 
         if($this->textMessage->isRoomEvent() || $this->textMessage->isGroupEvent()){
             error_log("wont check cause it's a room/group");
