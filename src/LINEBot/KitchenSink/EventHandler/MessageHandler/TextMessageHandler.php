@@ -315,6 +315,11 @@ class TextMessageHandler implements EventHandler
     }
 
     private function checkUniqueUser(){
+        if($this->textMessage->isRoomEvent() || $this->textMessage->isGroupEvent()){
+            error_log("wont check cause it's a room/group");
+            return false;
+        }
+
         $userId = $this->textMessage->getUserId();
         error_log("checking user " . $userId);
         $response = $this->bot->getProfile($userId);
