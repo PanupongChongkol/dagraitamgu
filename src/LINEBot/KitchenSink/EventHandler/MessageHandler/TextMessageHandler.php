@@ -67,6 +67,7 @@ class TextMessageHandler implements EventHandler
         $text = strtolower($this->textMessage->getText());
         $replyToken = $this->textMessage->getReplyToken();
         $this->logger->info("Got text message from $replyToken: $text");
+        error_log("Got text message from $replyToken: $text");
 
         switch ($text) {
             case 'profile':
@@ -177,14 +178,22 @@ class TextMessageHandler implements EventHandler
                 $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
 
+                error_log("Ramdom as " . $keyword);
+                error_log("at " . $location);
+
                 $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
                 $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
                 $url .= "&type=" . 'restaurant';
                 $url .= "&radius=" . '1000';
                 $url .= "&keyword=" . urlencode($keyword);
                 $url .= "&location=" . urlencode($location);
+
+                error_log("Request Url is " . $url);
+
                 $response = file_get_contents($url);
                 $response = urldecode($response);
+
+                error_log("Response is " . json_encode($response));
 
                 $json = json_decode($response);
 
@@ -192,6 +201,8 @@ class TextMessageHandler implements EventHandler
                 $longitude = $json->results[0]->geometry->location->lng;
                 $title = $json->results[0]->name;
                 $address = $json->results[0]->vicinity;
+
+                error_log("Replying is " . $title . " at " . $address);
 
                 $this->bot->replyMessage(
                     $replyToken,

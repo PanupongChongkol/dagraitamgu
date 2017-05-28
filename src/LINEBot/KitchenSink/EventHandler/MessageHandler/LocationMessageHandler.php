@@ -67,8 +67,13 @@ class LocationMessageHandler implements EventHandler
         $url .= "&radius=" . '1000';
         $url .= "&keyword=" . urlencode($keyword);
         $url .= "&location=" . urlencode($location);
+
+        error_log("Request Url is " . $url);
+
         $response = file_get_contents($url);
         $response = urldecode($response);
+
+        error_log("Response is " . json_encode($response));
 
         $json = json_decode($response);
 
@@ -76,6 +81,8 @@ class LocationMessageHandler implements EventHandler
         $longitude = $json->results[0]->geometry->location->lng;
         $title = $json->results[0]->name;
         $address = $json->results[0]->vicinity;
+        
+        error_log("Replying is " . $title . " at " . $address);
 
         $this->bot->replyMessage(
             $replyToken,
