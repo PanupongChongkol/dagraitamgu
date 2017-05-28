@@ -227,7 +227,7 @@ class TextMessageHandler implements EventHandler
                     return; 
                 }
 
-                $this->bot->pushMessage(
+                $this->bot->replyMessage(
                     $replyToken,
                     (new LINEBot\MessageBuilder\MultiMessageBuilder())->add(new TextMessageBuilder('แดกนี่ไง'))
                         ->add(new LocationMessageBuilder($title, $address, $latitude, $longitude))
