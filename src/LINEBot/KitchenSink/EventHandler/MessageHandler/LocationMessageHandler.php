@@ -88,10 +88,17 @@ class LocationMessageHandler implements EventHandler
             $replyToken,
             new LocationMessageBuilder($title, $address, $latitude, $longitude)
         );*/
+
+        $userId = $this->textMessage->getUserId();
+        $response = $this->bot->getProfile($userId);
+        if (!$response->isSucceeded()) {
+            $this->bot->replyText($replyToken, $response->getRawBody());
+            return;
+        }
+        $profile = $response->getJSONDecodedBody();
+        $keyword = $profile['displayName'];
+        $location = $latitude . ',' . $longitude;
         
-        $replyToken = $this->locationMessage->getReplyToken();
-        $title = $this->locationMessage->getTitle();
-        $address = $this->locationMessage->getAddress();
         $latitude = $this->locationMessage->getLatitude();
         $longitude = $this->locationMessage->getLongitude();
 

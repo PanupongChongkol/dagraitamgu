@@ -167,8 +167,7 @@ class TextMessageHandler implements EventHandler
             $this->randomFood($replyToken);
         }
         if(strpos($text, 'แดกไหน') !== false){
-            $this->bot->replyText($replyToken, 'อยากไปแดกแถวไหนละ');
-            $this->bot->replyText($replyToken, 'แชร์โลมาด้ายนะ');
+            $this->bot->replyText($replyToken, 'อยากไปแดกแถวไหนละ', 'แชร์โลมาด้ายนะ');
         }
         if(strpos($text, 'สุ่ม') !== false){
             if(strpos($text, 'มา') !== false){
@@ -266,16 +265,22 @@ class TextMessageHandler implements EventHandler
     }
 
     function load($path, $key_field = null){
-        if (!is_file($path)) {
+        error_log('Load 1');
+       if (!is_file($path)) {
             throw new \Exception('File does not exist ' . $path, \Application::ERR_CODE_COMMON);
         }
-        
+             error_log('Load 2');
+   
         $fp = fopen($path, 'r');
+             error_log('Load 3');
 
         $header_array = fgetcsv($fp);
-        $use_key = !is_null($key_field) && in_array($key_field, $header_array);
-        $csv = null;
-        while ($field_array = fgetcsv($fp)) {
+              error_log('Load 4');
+       $use_key = !is_null($key_field) && in_array($key_field, $header_array);
+                error_log('Load 5');
+     $csv = null;
+              error_log('Load 6');
+       while ($field_array = fgetcsv($fp)) {
             if ($use_key !== false) {
                 $row = array_combine($header_array, $field_array);
                 $csv[$row[$key_field]] = $row;
@@ -284,7 +289,9 @@ class TextMessageHandler implements EventHandler
                 $csv[] = $row;
             }
         }
+             error_log('Load 7');
         fclose($fp);
-        return $csv;
+              error_log('Load 8');
+       return $csv;
     }
 }
