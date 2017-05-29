@@ -35,7 +35,7 @@ class UrlBuilder
         }
         $REQUEST_PROTOCOL = $isSecure ? 'https' : 'http';
 
-        $baseUri = $REQUEST_PROTOCOL . '://' . $_SERVER['SERVER_NAME'] . '/';
+        $baseUri = $REQUEST_PROTOCOL . '://' . $_SERVER['SERVER_NAME'] . '/public/';
         foreach ($paths as $path) {
             $baseUri .= '/' . urlencode($path);
         }
