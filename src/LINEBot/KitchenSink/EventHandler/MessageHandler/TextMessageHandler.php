@@ -66,7 +66,6 @@ class TextMessageHandler implements EventHandler
 
     public function handle()
     {
-    try{
         $text = strtolower($this->textMessage->getText());
         $replyToken = $this->textMessage->getReplyToken();
         $this->logger->info("Got text message from $replyToken: $text");
@@ -103,7 +102,7 @@ class TextMessageHandler implements EventHandler
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
             case 'buttonss':
-                $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
+                $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '678.jpg']);
                 $buttonTemplateBuilder = new ButtonTemplateBuilder(
                     'My button sample',
                     'Hello my button',
@@ -120,7 +119,7 @@ class TextMessageHandler implements EventHandler
                 $this->bot->replyMessage($replyToken, $templateMessage);
                 break;
             case 'carousell':
-                $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '1040.jpg']);
+                $imageUrl = UrlBuilder::buildUrl($this->req, ['static', 'buttons', '678.jpg']);
                 error_log("The url is " . $imageUrl);
                 $carouselTemplateBuilder = new CarouselTemplateBuilder([
                     new CarouselColumnTemplateBuilder('foo', 'bar', $imageUrl, [
@@ -244,13 +243,6 @@ class TextMessageHandler implements EventHandler
                 );
             }
         }
-    }
-    catch(Exception $e){
-        $this->bot->replyText(
-            $replyToken,
-            $e->getMessage()
-        );
-    }
     }
 
      /**
