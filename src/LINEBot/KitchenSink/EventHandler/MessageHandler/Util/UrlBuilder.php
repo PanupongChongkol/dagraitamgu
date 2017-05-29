@@ -25,7 +25,17 @@ class UrlBuilder
         // NOTE: You should configure $baseUri according to your environment
         // Perhaps, it is prefer to use $_SERVER['HTTP_HOST'], $_SERVER['HTTP_X_FORWARDED_HOST'] or etc
         //$baseUri = $req->getUri()->getBaseUrl();
-        $baseUri = $_SERVER['SERVER_NAME'] . '/';
+
+        $isSecure = false;
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+            $isSecure = true;
+        }
+        elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on') {
+            $isSecure = true;
+        }
+        $REQUEST_PROTOCOL = $isSecure ? 'https' : 'http';
+
+        $baseUri = $REQUEST_PROTOCOL . '://' . $_SERVER['SERVER_NAME'] . '/';
         foreach ($paths as $path) {
             $baseUri .= '/' . urlencode($path);
         }
