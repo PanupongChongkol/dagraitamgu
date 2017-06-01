@@ -49,6 +49,8 @@ class TextMessageHandler implements EventHandler
     /** @var TextMessage $textMessage */
     private $textMessage;
 
+    const LOCATION_CSV = __DIR__ . '/location.csv';
+
     /**
      * TextMessageHandler constructor.
      * @param $bot
@@ -205,41 +207,59 @@ class TextMessageHandler implements EventHandler
                 if($this->checkUniqueUser()){
                     $keyword = 'kfc';
                 }
-                $location = $this->load(__DIR__ . '/./location.csv', 'id'); 
+                $location = $this->load(self::LOCATION_CSV, 'id'); 
                 shuffle($location);
                 $ranLocation = array_splice($location, 0)[0];
                 $location = $ranLocation['lat'] . ',' . $ranLocation ['lng'];
 
-                $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-                $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
-                $url .= "&type=" . 'restaurant';
-                $url .= "&radius=" . '10000';
-                $url .= "&keyword=" . urlencode($keyword);
-                $url .= "&location=" . urlencode($location);
+                $json = $this->searchLocation($keyword, $location);
 
-                $response = file_get_contents($url);
-                $response = urldecode($response);
-
-                $json = json_decode($response);
-
-                $latitude = $json->results[0]->geometry->location->lat;
-                $longitude = $json->results[0]->geometry->location->lng;
-                $title = $json->results[0]->name;
-                $address = $json->results[0]->vicinity;
-                error_log("Replying is " . $title . " at " . $address . " " . $latitude . "," . $longitude);
-                if(!isset($address)){
-                    $this->bot->replyText(
-                        $replyToken,
-                        "ไม่เจอจริง"
-                    );
+                if(!isset($json->results[0]->vicinity)){
+                    $this->bot->replyText( $replyToken, "ไม่เจอจริง" );
                     return; 
                 }
+
+                if(count($json->results) == 1){
+                    $latitude = $json->results[0]->geometry->location->lat;
+                    $longitude = $json->results[0]->geometry->location->lng;
+                    $title = $json->results[0]->name;
+                    $address = $json->results[0]->vicinity;
+
+                    $reff = $json->results[0]->photos[0]->photo_reference;
+                    $imageUrl = $this->requestImageUrl($reff);
+
+                    $placeId = $json->results[0]->place_id;
+                    $detail = $this->requestLocationDetail($placeId);
+
+                    $buttonTemplateBuilder = new ButtonTemplateBuilder(
+                    'My button sample',
+                    'Hello my button',
+                    $imageUrl,
+                    [
+                        new UriTemplateActionBuilder('Website', $detail->result->website),
+                        /*new PostbackTemplateActionBuilder('Get Location', 
+                            'action=location'.
+                            '&latitude=' . $latitude .
+                            '&longitude=' . $longitude .
+                            '&title=' . $title .
+                            '&address=' . $address
+                            ),*/
+                        new UriTemplateActionBuilder('Map', $detail->result->url),
+                    ]
+                    );
+                    $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
+                    error_log(json_encode($templateMessage->buildMessage()));
+                    //$this->bot->replyMessage($replyToken, $templateMessage);
+                } else { // Show carousel
+                    # code...
+                }
+
 
                 $this->bot->replyMessage(
                     $replyToken,
                     (new LINEBot\MessageBuilder\MultiMessageBuilder())
                         ->add(new TextMessageBuilder('แดกนี่ไง'))
-                        ->add(new LocationMessageBuilder($title, $address, $latitude, $longitude))
+                        ->add($templateMessage)
                 );
             }
         }
@@ -330,5 +350,39 @@ class TextMessageHandler implements EventHandler
             return true;
         }
         return false;
+    }
+
+    private function searchLocation($keyword, $location){
+        $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&type=" . 'restaurant';
+        $url .= "&radius=" . '10000';
+        $url .= "&keyword=" . urlencode($keyword);
+        $url .= "&location=" . urlencode($location);
+
+        $response = file_get_contents($url);
+        $response = urldecode($response);
+        $output = json_decode($response);
+        return $output;
+    }
+
+    private function requestLocationDetail($placeId){
+        $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&place_id=" . $placeId;
+
+        $response = file_get_contents($url);
+        $response = urldecode($response);
+        $output = json_decode($response);
+        return $output;
+    }
+    
+    private function requestImageUrl($refference){
+        $url = 'https://maps.googleapis.com/maps/api/place/photo?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&maxwidth=" . '1040';
+        $url .= "&photoreference=" . $refference;
+
+        return $url;
     }
 }
