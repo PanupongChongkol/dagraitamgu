@@ -236,6 +236,7 @@ class TextMessageHandler implements EventHandler
                     $placeId = $json->results[0]->place_id;
                     $detail = $this->requestLocationDetail($placeId);
                     error_log("request detail completed");
+                    error_log("request detail " . json_encode($detail));
 
                     $buttonTemplateBuilder = new ButtonTemplateBuilder(
                     'My button sample',
