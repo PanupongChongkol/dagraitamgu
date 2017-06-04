@@ -280,7 +280,9 @@ class TextMessageHandler implements EventHandler
                             $actionList[] = new MessageTemplateActionBuilder('No Website', 'The restaurant has no website');
                         }
                         $actionList[] = new UriTemplateActionBuilder('Map', $detail->result->url);
-                        $carouselColumns[] = new CarouselColumnTemplateBuilder('foo', 'bar', $imageUrl,
+                        $carouselColumns[] = new CarouselColumnTemplateBuilder($detail->result->name,
+                                            if(isset($detail->result->formatted_phone_number)) ? $detail->result->formatted_phone_number : $detail->result->formatted_address,
+                                            $imageUrl,
                                             $actionList
                                             );
                 
