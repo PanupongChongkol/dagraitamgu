@@ -281,7 +281,7 @@ class TextMessageHandler implements EventHandler
                         }
                         $actionList[] = new UriTemplateActionBuilder('Map', $detail->result->url);
                         $carouselColumns[] = new CarouselColumnTemplateBuilder($detail->result->name,
-                                            if(isset($detail->result->formatted_phone_number)) ? $detail->result->formatted_phone_number : $detail->result->formatted_address,
+                                            isset($detail->result->formatted_phone_number) ? $detail->result->formatted_phone_number : $detail->result->formatted_address,
                                             $imageUrl,
                                             $actionList
                                             );
