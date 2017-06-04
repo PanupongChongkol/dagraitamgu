@@ -220,16 +220,22 @@ class TextMessageHandler implements EventHandler
                 }
 
                 if(count($json->results) == 1){
+                    error_log("There is only one search");
                     $latitude = $json->results[0]->geometry->location->lat;
                     $longitude = $json->results[0]->geometry->location->lng;
                     $title = $json->results[0]->name;
                     $address = $json->results[0]->vicinity;
+                    error_log("There is only one search and get info completed");
 
                     $reff = $json->results[0]->photos[0]->photo_reference;
-                    $imageUrl = $this->requestImageUrl($reff);
+                     error_log("Requesting image");
+                   $imageUrl = $this->requestImageUrl($reff);
+
+                    error_log("request image completed");
 
                     $placeId = $json->results[0]->place_id;
                     $detail = $this->requestLocationDetail($placeId);
+                    error_log("request detail completed");
 
                     $buttonTemplateBuilder = new ButtonTemplateBuilder(
                     'My button sample',
@@ -247,11 +253,13 @@ class TextMessageHandler implements EventHandler
                         new UriTemplateActionBuilder('Map', $detail->result->url),
                     ]
                     );
+                    error_log("built button detail completed");
+
                     $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
                     error_log(json_encode($templateMessage->buildMessage()));
                     //$this->bot->replyMessage($replyToken, $templateMessage);
                 } else { // Show carousel
-                    # code...
+                    error_log("There are more one search and stop for now");
                 }
 
 
@@ -370,6 +378,9 @@ class TextMessageHandler implements EventHandler
         $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
         $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
         $url .= "&place_id=" . $placeId;
+        
+        error_log("request detail");
+        error_log("URL is " . $url);
 
         $response = file_get_contents($url);
         $response = urldecode($response);
@@ -382,6 +393,8 @@ class TextMessageHandler implements EventHandler
         $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
         $url .= "&maxwidth=" . '1040';
         $url .= "&photoreference=" . $refference;
+        
+        error_log("URL is " . $url);
 
         return $url;
     }
