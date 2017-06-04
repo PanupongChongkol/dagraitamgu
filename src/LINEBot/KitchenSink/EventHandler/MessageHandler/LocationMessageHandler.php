@@ -59,18 +59,12 @@ class LocationMessageHandler implements EventHandler
 
         $location = $latitude . ',' . $longitude;
 
-        $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
-        $url .= "&type=" . 'restaurant';
-        $url .= "&radius=" . '10000';
-        $url .= "&keyword=" . urlencode($keyword);
-        $url .= "&location=" . urlencode($location);
+        $json = $this->searchLocation($keyword, $location);
 
-        $response = file_get_contents($url);
-        $response = urldecode($response);
-
-        $json = json_decode($response);
-        //$result = $json->results[rand(0,count($json->results) - 1)];
+        if(!isset($json->results[0]->vicinity)){
+            $this->bot->replyText( $replyToken, "ไม่เจอจริง" ); //TODO random deny word(s)
+            return; 
+        }
 
         if(count($json->results) == 1){
             error_log("There is only one search");
@@ -113,8 +107,7 @@ class LocationMessageHandler implements EventHandler
             error_log("There are more than one search");
             $cap = min(count($json->results),5); //Cap carousel at 5
             $carouselColumns = [];
-            for ($i=0; $i < $cap; $i++) { 
-
+            for ($i=0; $i < $cap; $i++) {
                 $latitude = $json->results[$i]->geometry->location->lat;
                 $longitude = $json->results[$i]->geometry->location->lng;
                 $title = $json->results[$i]->name;
@@ -161,5 +154,44 @@ class LocationMessageHandler implements EventHandler
             return true;
         }
         return false;
+    }
+
+    private function searchLocation($keyword, $location){
+        $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&type=" . 'restaurant';
+        $url .= "&radius=" . '10000';
+        $url .= "&keyword=" . urlencode($keyword);
+        $url .= "&location=" . urlencode($location);
+
+        $response = file_get_contents($url);
+        $response = urldecode($response);
+        $output = json_decode($response);
+        return $output;
+    }
+
+    private function requestLocationDetail($placeId){
+        $url = 'https://maps.googleapis.com/maps/api/place/details/json?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&place_id=" . $placeId;
+
+        error_log("request detail");
+        error_log("URL is " . $url);
+
+        $response = file_get_contents($url);
+        $response = urldecode($response);
+        $output = json_decode($response);
+        return $output;
+    }
+    
+    private function requestImageUrl($refference){
+        $url = 'https://maps.googleapis.com/maps/api/place/photo?';
+        $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
+        $url .= "&maxwidth=" . '1040';
+        $url .= "&photoreference=" . $refference;
+        
+        error_log("URL is " . $url);
+
+        return $url;
     }
 }
