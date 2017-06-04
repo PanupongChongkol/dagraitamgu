@@ -376,10 +376,10 @@ class TextMessageHandler implements EventHandler
     }
 
     private function requestLocationDetail($placeId){
-        $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+        $url = 'https://maps.googleapis.com/maps/api/place/details/json?';
         $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
         $url .= "&place_id=" . $placeId;
-        
+
         error_log("request detail");
         error_log("URL is " . $url);
 
