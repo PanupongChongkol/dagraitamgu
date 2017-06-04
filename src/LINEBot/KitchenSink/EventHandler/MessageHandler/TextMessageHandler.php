@@ -266,13 +266,15 @@ class TextMessageHandler implements EventHandler
                         $longitude = $json->results[$i]->geometry->location->lng;
                         $title = $json->results[$i]->name;
                         $address = $json->results[$i]->vicinity;
-                        $reff = $json->results[$i]->photos[0]->photo_reference;
-                        $imageUrl = $this->requestImageUrl($reff);
 
                         $placeId = $json->results[$i]->place_id;
                         $detail = $this->requestLocationDetail($placeId);
                         error_log("request detail completed");
                         error_log("request detail " . json_encode($detail));
+
+                        $reff = $detail->result->photos[0]->photo_reference;
+                        $imageUrl = $this->requestImageUrl($reff);
+
                         $actionList = [];
                         if(isset($detail->result->website)){
                             $actionList[] = new UriTemplateActionBuilder('Website', $detail->result->website);
