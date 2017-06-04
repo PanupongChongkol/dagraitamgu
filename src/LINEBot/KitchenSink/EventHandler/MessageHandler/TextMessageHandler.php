@@ -219,7 +219,7 @@ class TextMessageHandler implements EventHandler
                     return; 
                 }
 
-                if(count($json->results) >= 1){
+                if(count($json->results) == 1){
                     error_log("There is only one search");
                     $latitude = $json->results[0]->geometry->location->lat;
                     $longitude = $json->results[0]->geometry->location->lng;
@@ -238,21 +238,18 @@ class TextMessageHandler implements EventHandler
                     error_log("request detail completed");
                     error_log("request detail " . json_encode($detail));
 
+                    $actionList = [];
+                    if(isset($detail->result->website)){
+                        $actionList[] = new UriTemplateActionBuilder('Website', $detail->result->website);
+                    } else {
+                        $actionList[] = new MessageTemplateActionBuilder('No Website', 'The restaurant has no website');
+                    }
+                    $actionList[] = new UriTemplateActionBuilder('Map', $detail->result->url);
                     $buttonTemplateBuilder = new ButtonTemplateBuilder(
-                    'My button sample',
-                    'Hello my button',
+                    'Single Restaurant Result',
+                    'Single Restaurant',
                     $imageUrl,
-                    [
-                        new UriTemplateActionBuilder('Website', $detail->result->website),
-                        /*new PostbackTemplateActionBuilder('Get Location', 
-                            'action=location'.
-                            '&latitude=' . $latitude .
-                            '&longitude=' . $longitude .
-                            '&title=' . $title .
-                            '&address=' . $address
-                            ),*/
-                        new UriTemplateActionBuilder('Map', $detail->result->url),
-                    ]
+                    $actionList
                     );
                     error_log("built button detail completed");
 
@@ -260,16 +257,39 @@ class TextMessageHandler implements EventHandler
                     error_log(json_encode($templateMessage->buildMessage()));
                     //$this->bot->replyMessage($replyToken, $templateMessage);
                 } else { // Show carousel
-                    error_log("There are more one search and stop for now");
+                    error_log("There are more than one search");
+                    $cap = min(count($json->results),5); //Cap carousel at 5
+                    $carouselColumns = [];
+                    for ($i=0; $i < $cap; $i++) { 
+
+                        $latitude = $json->results[$i]->geometry->location->lat;
+                        $longitude = $json->results[$i]->geometry->location->lng;
+                        $title = $json->results[$i]->name;
+                        $address = $json->results[$i]->vicinity;
+                        $reff = $json->results[$i]->photos[0]->photo_reference;
+                        $imageUrl = $this->requestImageUrl($reff);
+
+                        $placeId = $json->results[$i]->place_id;
+                        $detail = $this->requestLocationDetail($placeId);
+                        error_log("request detail completed");
+                        error_log("request detail " . json_encode($detail));
+                        $actionList = [];
+                        if(isset($detail->result->website)){
+                            $actionList[] = new UriTemplateActionBuilder('Website', $detail->result->website);
+                        } else {
+                            $actionList[] = new MessageTemplateActionBuilder('No Website', 'The restaurant has no website');
+                        }
+                        $actionList[] = new UriTemplateActionBuilder('Map', $detail->result->url);
+                        $carouselColumns[] = new CarouselColumnTemplateBuilder('foo', 'bar', $imageUrl,
+                                            $actionList
+                                            );
+                
+                    }
+                    $carouselTemplateBuilder = new CarouselTemplateBuilder($carouselColumns);
+                    $templateMessage = new TemplateMessageBuilder('Multiple Result', $carouselTemplateBuilder);
+                    error_log(json_encode($templateMessage->buildMessage()));
+                    $this->bot->replyMessage($replyToken, $templateMessage);
                 }
-
-
-                $this->bot->replyMessage(
-                    $replyToken,
-                    (new LINEBot\MessageBuilder\MultiMessageBuilder())
-                        ->add(new TextMessageBuilder('แดกนี่ไง'))
-                        ->add($templateMessage)
-                );
             }
         }
     }
