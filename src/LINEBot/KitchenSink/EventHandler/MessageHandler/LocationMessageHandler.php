@@ -70,19 +70,82 @@ class LocationMessageHandler implements EventHandler
         $response = urldecode($response);
 
         $json = json_decode($response);
-        $result = $json->results[rand(0,count($json->results) - 1)];
+        //$result = $json->results[rand(0,count($json->results) - 1)];
 
-        $latitude = $result->geometry->location->lat;
-        $longitude = $result->geometry->location->lng;
-        $title = $result->name;
-        $address = $result->vicinity;
-        
-        error_log("Replying is " . $title . " at " . $address);
+        if(count($json->results) == 1){
+            error_log("There is only one search");
+            $latitude = $json->results[0]->geometry->location->lat;
+            $longitude = $json->results[0]->geometry->location->lng;
+            $title = $json->results[0]->name;
+            $address = $json->results[0]->vicinity;
+            error_log("There is only one search and get info completed");
 
-        $this->bot->replyMessage(
-            $replyToken,
-            new LocationMessageBuilder($title, $address, $latitude, $longitude)
-        );
+            $reff = $json->results[0]->photos[0]->photo_reference;
+            error_log("Requesting image");
+            $imageUrl = $this->requestImageUrl($reff);
+
+            error_log("request image completed");
+
+            $placeId = $json->results[0]->place_id;
+            $detail = $this->requestLocationDetail($placeId);
+            error_log("request detail completed");
+            error_log("request detail " . json_encode($detail));
+
+            $actionList = [];
+            if(isset($detail->result->website)){
+                $actionList[] = new UriTemplateActionBuilder('Website', $detail->result->website);
+            } else {
+                $actionList[] = new MessageTemplateActionBuilder('No Website', 'The restaurant has no website');
+            }
+            $actionList[] = new UriTemplateActionBuilder('Map', $detail->result->url);
+            $buttonTemplateBuilder = new ButtonTemplateBuilder(
+            'Single Restaurant Result',
+            'Single Restaurant',
+            $imageUrl,
+            $actionList
+            );
+            error_log("built button detail completed");
+
+            $templateMessage = new TemplateMessageBuilder('Button alt text', $buttonTemplateBuilder);
+            error_log(json_encode($templateMessage->buildMessage()));
+            //$this->bot->replyMessage($replyToken, $templateMessage);
+        } else { // Show carousel
+            error_log("There are more than one search");
+            $cap = min(count($json->results),5); //Cap carousel at 5
+            $carouselColumns = [];
+            for ($i=0; $i < $cap; $i++) { 
+
+                $latitude = $json->results[$i]->geometry->location->lat;
+                $longitude = $json->results[$i]->geometry->location->lng;
+                $title = $json->results[$i]->name;
+                $address = $json->results[$i]->vicinity;
+
+                $placeId = $json->results[$i]->place_id;
+                $detail = $this->requestLocationDetail($placeId);
+                error_log("request detail completed");
+                error_log("request detail " . json_encode($detail));
+
+                $reff = $detail->result->photos[0]->photo_reference;
+                $imageUrl = $this->requestImageUrl($reff);
+
+                $actionList = [];
+                if(isset($detail->result->website)){
+                    $actionList[] = new UriTemplateActionBuilder('Website', $detail->result->website);
+                } else {
+                    $actionList[] = new MessageTemplateActionBuilder('No Website', 'The restaurant has no website');
+                }
+                $actionList[] = new UriTemplateActionBuilder('Map', $detail->result->url);
+                $carouselColumns[] = new CarouselColumnTemplateBuilder($detail->result->name,
+                                    isset($detail->result->formatted_phone_number) ? $detail->result->formatted_phone_number : $detail->result->formatted_address,
+                                    $imageUrl,
+                                    $actionList
+                                    );    
+            }
+            $carouselTemplateBuilder = new CarouselTemplateBuilder($carouselColumns);
+            $templateMessage = new TemplateMessageBuilder('Multiple Result', $carouselTemplateBuilder);
+            error_log(json_encode($templateMessage->buildMessage()));
+            $this->bot->replyMessage($replyToken, $templateMessage);
+        }
     }
 
     private function checkUniqueUser(){
