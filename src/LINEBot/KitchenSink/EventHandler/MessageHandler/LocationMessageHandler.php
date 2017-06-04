@@ -21,7 +21,14 @@ namespace LINE\LINEBot\KitchenSink\EventHandler\MessageHandler;
 use LINE\LINEBot;
 use LINE\LINEBot\Event\MessageEvent\LocationMessage;
 use LINE\LINEBot\KitchenSink\EventHandler;
+use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\LocationMessageBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 
 class LocationMessageHandler implements EventHandler
 {
