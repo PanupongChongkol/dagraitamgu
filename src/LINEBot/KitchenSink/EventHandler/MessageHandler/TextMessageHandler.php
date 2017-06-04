@@ -219,7 +219,7 @@ class TextMessageHandler implements EventHandler
                     return; 
                 }
 
-                if(count($json->results) == 1){
+                if(count($json->results) >= 1){
                     error_log("There is only one search");
                     $latitude = $json->results[0]->geometry->location->lat;
                     $longitude = $json->results[0]->geometry->location->lng;
