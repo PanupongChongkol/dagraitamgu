@@ -167,7 +167,7 @@ class LocationMessageHandler implements EventHandler
         $url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
         $url .= "key=" . 'AIzaSyBpHGnZLYSvSlgT8xL6GVUQkN0TGMMBpDQ';
         $url .= "&type=" . 'restaurant';
-        $url .= "&radius=" . '10000';
+        $url .= "&radius=" . '2000';
         $url .= "&keyword=" . urlencode($keyword);
         $url .= "&location=" . urlencode($location);
 
